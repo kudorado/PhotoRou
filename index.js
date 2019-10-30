@@ -146,7 +146,7 @@ function onSocketConnecting(socket){
 	});
 
 	socket.on("joinRoom", function(roomId){
-		console.log("received event from client!");
+		console.log("received event from client!: " + socket.id);
 		joinRoom(socket, roomId);
 	});
 
