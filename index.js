@@ -60,7 +60,7 @@ io.on('connection', function(socket){
 	socket.on('disconnect', (reason) => {
 		console.log("some one disconnect!");
 
-	}
+	});
 });
 
 
