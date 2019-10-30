@@ -55,7 +55,7 @@ function initRoom(){
 io.on('connection', function(socket){
 	connector++;
 	console.log("socket connecting: " + socket.id);
-	onSocketConnecting(socket);
+	// onSocketConnecting(socket);
 
 	socket.on('disconnect', (reason) => {
 		console.log("some one disconnect!");
