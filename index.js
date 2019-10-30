@@ -55,59 +55,68 @@ function initRoom(){
 io.on('connection', function(socket){
 	connector++;
 	console.log("socket connecting: " + socket.id);
-	// onSocketConnecting(socket);
 
+
+
+	socket.on("joinRoom", function(roomId){
+		console.log("received event from socket: " + socket.id);
+		roomDatas[socket.id] = roomId;
+		joinRoom(socket, roomId);
+	});
+
+	// onSocketConnecting(socket);
 	socket.on('disconnect', (reason) => {
 		console.log("some one disconnect!");
-
 	});
+
+
 });
 
 
 const maxPlayer = 4;
 
-// function join(socket, room){
-// 			socket.join(room, function(){
-// 			joinedRoom = room;
-// 			rooms[room]++;
-// 			socket.emit("joinRoom", {roomId: room});
-// 			console.log("socket is joined room: " + room)
-// 			console.log("total player in " + room +  " is: " + rooms[room]);
+function join(socket, room){
+			socket.join(room, function(){
+			joinedRoom = room;
+			rooms[room]++;
+			socket.emit("joinRoom", {roomId: room});
+			console.log("socket is joined room: " + room)
+			console.log("total player in " + room +  " is: " + rooms[room]);
 
-// 			if(rooms[room] == maxPlayer){
-// 				//start game
-// 				console.log("room " + room + " starting game!");
-// 				socket.emit("startGame");
+			if(rooms[room] == maxPlayer){
+				//start game
+				console.log("room " + room + " starting game!");
+				socket.emit("startGame");
 
-// 			}
-// 		});
-// }
+			}
+		});
+}
 
-// function joinRoom(socket, room){
+function joinRoom(socket, room){
 
-// 		// var cr = io.sockets.clients(room);
-// 		// if(typeof cr === "undefined"){
-// 		if(rooms[room] <= 0){
-// 			//no room, just join.
-// 			console.log("no player, just join this room and own it!");
-// 			join(socket, room);
+		// var cr = io.sockets.clients(room);
+		// if(typeof cr === "undefined"){
+		if(rooms[room] <= 0){
+			//no room, just join.
+			console.log("no player, just join this room and own it!");
+			join(socket, room);
 
-// 			// var cr =  io.sockets.clients(room);
+			// var cr =  io.sockets.clients(room);
 
-// 		}
-// 		else{
-// 		if(rooms[room] < maxPlayer){
-// 			console.log("lenme join the party!");
-// 			join(socket, room);
-// 		}
-// 		else{
-// 			socket.emit("roomFull");
-// 			console.log("room: " + room + " is full!");
-// 		}
-// 	}
+		}
+		else{
+		if(rooms[room] < maxPlayer){
+			console.log("lenme join the party!");
+			join(socket, room);
+		}
+		else{
+			socket.emit("roomFull");
+			console.log("room: " + room + " is full!");
+		}
+	}
 
 
-// }
+}
 
 // function getRandomRoom(){
 // 	var r = Math.random();
