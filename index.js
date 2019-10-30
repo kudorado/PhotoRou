@@ -138,6 +138,7 @@ function onSocketConnecting(socket){
 	});
 
 	socket.on('disconnect', (reason) => {
+		console.log("some one disconnect!");
 	connector--;
 	socket.emit("exitRoom");
 	var rd = roomDatas[socket.id] 
