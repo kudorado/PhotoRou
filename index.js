@@ -90,6 +90,7 @@ function join(socket, room){
 
 			}
 		});
+			 
 }
 
 function joinRoom(socket, room){
