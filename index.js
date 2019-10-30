@@ -23,6 +23,9 @@ io.attach(4567);
 
 var joinedRoom;
 var rooms = {};
+var roomDatas = {};
+
+
 var socket;
 var minRoom = 20000;
 var maxRoom = 100000;
@@ -134,19 +137,20 @@ function onSocketConnecting(socket){
 
 	socket.on('disconnect', (reason) => {
 	connector--;
-	if(joinedRoom !== "undefined"){
+	var rd = roomDatas[socket.id] 
+	if(typeof rd !== "undefined"){
 		//disconnect from room
 		joinedRoom = "undefined";
-		
 		rooms[joinedRoom]--;
-		console.log("Some one leave room " + joinedRoom + " reason: " + reason);
-		console.log("total player in " + joinedRoom +  " is: " + rooms[joinedRoom]);
+		console.log("Some one leave room " + rd + " reason: " + reason);
+		console.log("total player in " + rd +  " is: " + rooms[rd]);
 	}
 	 
 	});
 
 	socket.on("joinRoom", function(roomId){
-		console.log("received event from client!: " + socket.id);
+		console.log("received event from socket: " + socket.id);
+		roomDatas[socket.id] = roomId;
 		joinRoom(socket, roomId);
 	});
 
