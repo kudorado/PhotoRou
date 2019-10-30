@@ -9,7 +9,7 @@ const INDEX = path.join(__dirname, 'index.html');
 
 const server = express()
   .use((req, res) => res.sendFile(INDEX) )
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+  .listen(PORT,  "0.0.0.0", () => console.log(`Listening on ${ PORT }`));
 
 const io = socketIO(server);
 
@@ -45,7 +45,7 @@ function initRoom(){
 
 	for(var i = minRoom; i < maxRoom; i++){
 		rooms[i] = 0;
-		console.log("Room: " + i + " created!");
+		// console.log("Room: " + i + " created!");
 	}
 }
 
