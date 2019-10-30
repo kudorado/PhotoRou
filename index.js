@@ -18,7 +18,7 @@ const io = socketIO(server);
 
 var connector = 0;
 var startFunction = setInterval(initRoom, 100);
-setInterval(update, 1000); //time is in ms
+setInterval(update, 10000); //time is in ms
 io.attach(4567);
 
 var joinedRoom;
@@ -87,6 +87,7 @@ function joinRoom(socket, room){
 		}
 		else{
 		if(rooms[room] < maxPlayer){
+			console.log("lenme join the party!");
 			join(socket, room);
 		}
 		else{
@@ -144,8 +145,8 @@ function onSocketConnecting(socket){
 	 
 	});
 
-
 	socket.on("joinRoom", function(roomId){
+		console.log("received event from client!");
 		joinRoom(socket, roomId);
 	});
 
