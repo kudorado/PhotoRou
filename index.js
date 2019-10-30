@@ -54,6 +54,7 @@ function initRoom(){
 
 io.on('connection', function(socket){
 	connector++;
+	console.log("socket connecting: " + socket.id);
 	onSocketConnecting(socket);
 });
 
@@ -94,6 +95,7 @@ function joinRoom(socket, room){
 			join(socket, room);
 		}
 		else{
+			socket.emit("roomFull");
 			console.log("room: " + room + " is full!");
 		}
 	}
@@ -137,11 +139,12 @@ function onSocketConnecting(socket){
 
 	socket.on('disconnect', (reason) => {
 	connector--;
+	socket.emit("exitRoom");
 	var rd = roomDatas[socket.id] 
 	if(typeof rd !== "undefined"){
 		//disconnect from room
 		joinedRoom = "undefined";
-		rooms[joinedRoom]--;
+		rooms[rd]--;
 		console.log("Some one leave room " + rd + " reason: " + reason);
 		console.log("total player in " + rd +  " is: " + rooms[rd]);
 	}
