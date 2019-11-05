@@ -24,6 +24,7 @@ io.attach(4567);
 
 var joinedRoom;
 var rooms = [{
+round: 0,
 interval: '',
 id: '', 
 isPlaying: false,
@@ -80,9 +81,9 @@ io.on('connection', function(socket){
 
 
 
-	socket.on("joinRoom", function(roomId){
+	socket.on("joinRoom", function(roomData){
 		console.log("received event from socket: " + socket.id);
-		joinRoom(socket, roomId);
+		joinRoom(socket, roomData);
 	});
 
 	// onSocketConnecting(socket);
@@ -96,18 +97,31 @@ io.on('connection', function(socket){
 
 
 function join(socket, room){
-			socket.join(room, function(){
-			joinedRoom = room;
-			rooms[room]++;
-			socket.emit("joinRoom", {roomId: room});
-			console.log("socket is joined room: " + room)
-			console.log("total player in " + room +  " is: " + rooms[room]);
+			socket.join(room['id'], function(){
+			joinedRoom = room['id'];
+			rooms[room['id']]++;
+			rooms[room['id']].datas.push(room['datas']);	
 
-			if(rooms[room] == maxPlayer){
+			socket.emit("joinRoom", {roomId: room});
+			console.log("socket is joined room: " + room['id'])
+			console.log("total player in " + room['id'] +  " is: " + rooms[room['id']]);
+			if(rooms[room['id']] == maxPlayer){
 				//start game
-				console.log("room " + room + " starting game!");
+				console.log("room " + room['id'] + " starting game!");
+				//shuffling data before starting game.
+				var newDatas = [];
+				var datasCopy = rooms[room['id']].datas;
+				rooms.datas = [];
+
+				for(var s = 0; s < rooms[room['id']].datas.length; s++){
+					var r = Math.floor((Math.random() * datasCopy.length));
+					var it = datasCopy[r];
+					rooms.data[s] = it;
+					datasCopy.splice(r, 1);
+					console.log("data: " + it);
+				}
 				socket.emit("startGame");
-				rooms[room]['isStart'] = true;
+				rooms[room['id']]['isStart'] = true;
 			}
 		});
 			 
@@ -131,6 +145,7 @@ function excecuteGames(){
 
 
 function ResetRoom(i){
+	rooms[i].round = 0;
 	rooms[i].id = i;
 	rooms[i].isPlaying = false;
 	rooms[i].isExecuting = false;
@@ -139,17 +154,20 @@ function ResetRoom(i){
 }
 function UpdateRoom(room){
 	rooms[room.id].interval = room.setInterval(roundDuration, function(){
-		//pop data room
-		var data = room.datas.pop();
+		//pop data from room and update to client.
+
+		var data = room.datas[room.round];
+
 		io.to(room.id).emit('onGameUpdate', room);
-		if(datas.length <= 0)
+		if(room.round >= room.datas.length)
 		{
 			// clearInterval(rooms[room.id].interval);
 			//complete game, clear room data and status, kick all players.
-			io.to(room.id).emit('onGameCompleted', room);
+			io.to(room.id).emit('onGameFinished', room);
 			ResetRoom(room.id);
 		}
 		else{
+			room.round++;
 			UpdateRoom(room);
 		}
 	});
